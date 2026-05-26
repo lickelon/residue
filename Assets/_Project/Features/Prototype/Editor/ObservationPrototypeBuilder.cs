@@ -7,12 +7,14 @@ using UnityEngine.UI;
 
 public static class ObservationPrototypeBuilder
 {
-    private const string ScenePath = "Assets/Scenes/ObservationPrototype.unity";
+    private const string ProjectRoot = "Assets/_Project";
+    private const string ScenePath = ProjectRoot + "/Scenes/ObservationPrototype.unity";
+    private const string MaterialFolder = ProjectRoot + "/Art/Materials";
 
     [MenuItem("Tools/Residue/Build Observation Prototype")]
     public static void Build()
     {
-        Directory.CreateDirectory("Assets/Scenes");
+        Directory.CreateDirectory(ProjectRoot + "/Scenes");
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
 
         Material wall = CreateMaterial("Prototype_Wall", new Color(0.34f, 0.36f, 0.37f));
@@ -287,9 +289,8 @@ public static class ObservationPrototypeBuilder
 
     private static Material CreateMaterial(string name, Color color)
     {
-        string folder = "Assets/Materials";
-        Directory.CreateDirectory(folder);
-        string path = $"{folder}/{name}.mat";
+        Directory.CreateDirectory(MaterialFolder);
+        string path = $"{MaterialFolder}/{name}.mat";
         Material existing = AssetDatabase.LoadAssetAtPath<Material>(path);
         if (existing != null)
         {
