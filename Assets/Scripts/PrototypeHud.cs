@@ -29,7 +29,7 @@ public sealed class PrototypeHud : MonoBehaviour
         if (statusText != null && contamination != null)
         {
             string anchors = runState == null ? "앵커 0/3" : $"앵커 {runState.CollectedAnchors}/{runState.RequiredAnchors}";
-            statusText.text = $"{anchors}\n관측 오염 {contamination.Value:0} / 단계 {contamination.Stage}\nE로 앵커와 문을 조작한다.\n앵커를 모두 회수하고 오염 2단계 이하로 출구에 도달하라.";
+            statusText.text = $"{anchors}\n관측 오염 {contamination.Value:0} / 단계 {contamination.Stage}\n문은 방 안쪽으로 열리고, 오래 바라보면 닫힌다.\n앵커를 모두 회수하고 오염 2단계 이하로 출구에 도달하라.";
         }
 
         if (messageText != null && Time.time > messageUntil)

@@ -11,6 +11,8 @@ public sealed class SimpleDoor : MonoBehaviour
     [SerializeField] private float openAngle = -92f;
     [SerializeField] private float openSpeed = 68f;
     [SerializeField] private float closeSpeed = 105f;
+    [SerializeField] private float openHoldDuration = 2.2f;
+    [SerializeField] private float closeWatchDuration = 1.4f;
     [SerializeField] private float observationPenaltyCooldown = 1.2f;
     [SerializeField] private Color idleColor = new(0.34f, 0.36f, 0.37f);
     [SerializeField] private Color resistingColor = new(0.72f, 0.26f, 0.22f);
@@ -21,6 +23,9 @@ public sealed class SimpleDoor : MonoBehaviour
     private bool openingRequested;
     private float currentAngle;
     private float lastPenaltyAt = -999f;
+    private float holdOpenUntil = -999f;
+    private float watchedOpenTime;
+    private bool fullyOpened;
 
     private void Awake()
     {
@@ -60,19 +65,44 @@ public sealed class SimpleDoor : MonoBehaviour
         if (playerNear && Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame)
         {
             openingRequested = !openingRequested;
-            hud?.ShowMessage(openingRequested ? "문은 시선을 먹는다. 열리게 두려면 보지 마라." : "문을 닫았다.");
+            if (!openingRequested)
+            {
+                holdOpenUntil = -999f;
+                watchedOpenTime = 0f;
+                fullyOpened = false;
+            }
+
+            hud?.ShowMessage(openingRequested ? "문은 방 안쪽으로 열린다. 열린 문을 오래 보면 닫힌다." : "문을 닫았다.");
         }
 
-        bool watched = openingRequested && IsWatched();
-        float targetAngle = openingRequested && !watched ? openAngle : 0f;
-        float speed = watched ? closeSpeed : (openingRequested ? openSpeed : closeSpeed);
+        bool heldOpen = Time.time < holdOpenUntil;
+        bool watched = openingRequested && fullyOpened && !heldOpen && IsWatched();
+        watchedOpenTime = watched ? watchedOpenTime + Time.deltaTime : 0f;
+        bool closingFromWatch = watchedOpenTime >= closeWatchDuration;
+        float targetAngle = openingRequested && !closingFromWatch ? openAngle : 0f;
+        float speed = closingFromWatch ? closeSpeed : (openingRequested ? openSpeed : closeSpeed);
         currentAngle = Mathf.MoveTowards(currentAngle, targetAngle, speed * Time.deltaTime);
         hinge.localRotation = Quaternion.Euler(0f, currentAngle, 0f);
+
+        if (openingRequested && !fullyOpened && Mathf.Approximately(currentAngle, openAngle))
+        {
+            fullyOpened = true;
+            holdOpenUntil = Time.time + openHoldDuration;
+            hud?.ShowMessage("문이 안쪽으로 밀려 열렸다. 지금 통과하라.");
+        }
+
+        if (closingFromWatch && Mathf.Approximately(currentAngle, 0f))
+        {
+            openingRequested = false;
+            watchedOpenTime = 0f;
+            fullyOpened = false;
+            hud?.ShowMessage("문이 시선을 견디지 못하고 닫혔다.");
+        }
 
         if (watched && Time.time - lastPenaltyAt >= observationPenaltyCooldown)
         {
             contamination?.Add(5f, ContaminationCause.LongObservation);
-            hud?.ShowMessage("문이 시선을 버틴다. 계속 보면 더 닫힌다.");
+            hud?.ShowMessage("문이 시선을 느낀다. 계속 보면 닫힌다.");
             lastPenaltyAt = Time.time;
         }
 
@@ -87,7 +117,7 @@ public sealed class SimpleDoor : MonoBehaviour
         }
 
         playerNear = true;
-        hud?.ShowMessage("E: 문 깨우기. 열린 뒤에는 시선을 떼라.");
+        hud?.ShowMessage("E: 문 깨우기. 열린 문을 오래 보지 마라.");
     }
 
     private void OnTriggerExit(Collider other)

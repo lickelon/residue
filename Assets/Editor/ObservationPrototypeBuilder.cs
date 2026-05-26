@@ -52,8 +52,8 @@ public static class ObservationPrototypeBuilder
 
         GameObject doorA = CreateDoor("Side Room Door", new Vector3(-3.95f, 1.15f, 5.3f), Quaternion.identity, hud, wall, contamination, camera);
         GameObject doorB = CreateDoor("Back Room Door", new Vector3(3.95f, 1.15f, 18.4f), Quaternion.Euler(0f, 180f, 0f), hud, wall, contamination, camera);
-        CreateAnchor("Anchor A", new Vector3(-8.5f, 0.65f, 6.5f), anchorMat, runState, hud);
-        CreateAnchor("Anchor B", new Vector3(8.4f, 0.65f, 17.7f), anchorMat, runState, hud);
+        CreateAnchor("Anchor A", new Vector3(-9.7f, 0.65f, 6.5f), anchorMat, runState, hud);
+        CreateAnchor("Anchor B", new Vector3(9.7f, 0.65f, 17.5f), anchorMat, runState, hud);
         CreateAnchor("Anchor C", new Vector3(0f, 0.65f, 21.8f), anchorMat, runState, hud);
 
         GameObject blocker = Cube("Unstable Exit Blocker", new Vector3(0f, 1.1f, 24.8f), new Vector3(2.2f, 2.2f, 0.25f), wall);

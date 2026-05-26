@@ -76,7 +76,7 @@ public sealed class StabilityAnchor : MonoBehaviour
         }
 
         playerNear = true;
-        hud?.ShowMessage("E: 안정화 앵커 회수");
+        hud?.ShowMessage("E: 안정화 앵커 회수. 회수하면 오염이 낮아진다.");
     }
 
     private void OnTriggerExit(Collider other)
