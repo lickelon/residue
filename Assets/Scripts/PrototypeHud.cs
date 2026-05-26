@@ -8,8 +8,12 @@ public sealed class PrototypeHud : MonoBehaviour
     [SerializeField] private Text statusText;
     [SerializeField] private Text messageText;
     [SerializeField] private float messageDuration = 4f;
+    [SerializeField] private Color normalMessageColor = new(0.94f, 0.82f, 0.58f);
+    [SerializeField] private Color warningMessageColor = new(1f, 0.52f, 0.32f);
+    [SerializeField] private Color criticalMessageColor = new(1f, 0.18f, 0.16f);
 
     private float messageUntil;
+    private int messagePriority;
 
     private void Awake()
     {
@@ -35,17 +39,40 @@ public sealed class PrototypeHud : MonoBehaviour
         if (messageText != null && Time.time > messageUntil)
         {
             messageText.text = string.Empty;
+            messagePriority = 0;
         }
     }
 
     public void ShowMessage(string message)
+    {
+        ShowMessage(message, 0);
+    }
+
+    public void ShowMessage(string message, int priority)
     {
         if (messageText == null)
         {
             return;
         }
 
+        if (Time.time < messageUntil && priority < messagePriority)
+        {
+            return;
+        }
+
         messageText.text = message;
+        messageText.color = GetMessageColor(priority);
         messageUntil = Time.time + messageDuration;
+        messagePriority = priority;
+    }
+
+    private Color GetMessageColor(int priority)
+    {
+        if (priority >= 2)
+        {
+            return criticalMessageColor;
+        }
+
+        return priority == 1 ? warningMessageColor : normalMessageColor;
     }
 }
