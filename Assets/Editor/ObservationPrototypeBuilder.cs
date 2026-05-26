@@ -71,6 +71,7 @@ public static class ObservationPrototypeBuilder
         ContaminationResponder responder = systems.AddComponent<ContaminationResponder>();
         SetObject(responder, "contamination", contamination);
         SetObject(responder, "viewCamera", camera);
+        SetObject(responder, "hud", hud);
         SetLightArray(responder, new[] { mainLight, hallLightB });
         SetChanges(responder, new[]
         {
