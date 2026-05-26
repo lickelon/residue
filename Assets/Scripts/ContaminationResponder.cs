@@ -7,6 +7,9 @@ public sealed class ContaminationChange
     public Transform target;
     public int requiredStage = 1;
     public bool requireOutOfView = true;
+    public bool requireDominantCause;
+    public ContaminationCause dominantCause;
+    public float minimumCauseAmount;
     public Vector3 localPositionOffset;
     public Vector3 localEulerOffset;
     public Vector3 localScaleMultiplier = Vector3.one;
@@ -118,6 +121,11 @@ public sealed class ContaminationResponder : MonoBehaviour
                 continue;
             }
 
+            if (!MatchesCauseProfile(change))
+            {
+                continue;
+            }
+
             if (change.requireOutOfView && IsVisible(change.target))
             {
                 continue;
@@ -125,7 +133,7 @@ public sealed class ContaminationResponder : MonoBehaviour
 
             Apply(change);
             applied[i] = true;
-            hud?.ShowMessage($"{change.target.name}이 시야 밖에서 달라졌다.", 1);
+            hud?.ShowMessage(GetChangeMessage(change), 1);
         }
     }
 
@@ -150,6 +158,26 @@ public sealed class ContaminationResponder : MonoBehaviour
 
         Vector3 viewport = viewCamera.WorldToViewportPoint(target.position);
         return viewport.z > 0f && viewport.x > 0.04f && viewport.x < 0.96f && viewport.y > 0.04f && viewport.y < 0.96f;
+    }
+
+    private bool MatchesCauseProfile(ContaminationChange change)
+    {
+        if (!change.requireDominantCause && change.minimumCauseAmount <= 0f)
+        {
+            return true;
+        }
+
+        if (contamination == null || !contamination.HasCauseProfile)
+        {
+            return false;
+        }
+
+        if (change.requireDominantCause && contamination.DominantCause != change.dominantCause)
+        {
+            return false;
+        }
+
+        return contamination.GetCauseAmount(change.dominantCause) >= change.minimumCauseAmount;
     }
 
     private void ApplyLighting()
@@ -203,5 +231,16 @@ public sealed class ContaminationResponder : MonoBehaviour
             ContaminationCause.RepeatCheck => "같은 것을 다시 확인한 순간 위치가 어긋났다.",
             _ => "관측 오염이 증가했다."
         };
+    }
+
+    private string GetChangeMessage(ContaminationChange change)
+    {
+        if (!change.requireDominantCause)
+        {
+            return $"{change.target.name}이 시야 밖에서 달라졌다.";
+        }
+
+        string label = contamination == null ? "오염" : contamination.GetCauseLabel(change.dominantCause);
+        return $"{label} 성향이 {change.target.name}을 바꿨다.";
     }
 }

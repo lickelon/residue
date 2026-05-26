@@ -75,12 +75,12 @@ public static class ObservationPrototypeBuilder
         SetLightArray(responder, new[] { mainLight, hallLightB });
         SetChanges(responder, new[]
         {
-            Change(portrait.transform, 1, new Vector3(0f, 0.18f, 0f), new Vector3(0f, 0f, 7f), Vector3.one, false, true),
-            Change(chair.transform, 2, new Vector3(0.75f, 0f, -0.35f), new Vector3(0f, 38f, 0f), new Vector3(1.05f, 1f, 1.05f), false, true),
-            Change(cabinet.transform, 3, new Vector3(0f, 0f, -1.2f), Vector3.zero, new Vector3(1f, 1.28f, 1f), false, true),
-            Change(duplicatePortrait.transform, 4, Vector3.zero, Vector3.zero, Vector3.one, true, true),
-            Change(doorA.transform, 3, new Vector3(0f, 0f, 1.4f), new Vector3(0f, 6f, 0f), Vector3.one, false, true),
-            Change(doorB.transform, 4, new Vector3(0f, 0f, -1.6f), new Vector3(0f, -8f, 0f), Vector3.one, false, true)
+            CauseChange(portrait.transform, 1, ContaminationCause.LongObservation, 6f, new Vector3(0f, 0.18f, 0f), new Vector3(0f, 0f, 7f), Vector3.one, false, true),
+            CauseChange(chair.transform, 2, ContaminationCause.FastLook, 8f, new Vector3(0.75f, 0f, -0.35f), new Vector3(0f, 38f, 0f), new Vector3(1.05f, 1f, 1.05f), false, true),
+            CauseChange(cabinet.transform, 3, ContaminationCause.LongObservation, 12f, new Vector3(0f, 0f, -1.2f), Vector3.zero, new Vector3(1f, 1.28f, 1f), false, true),
+            CauseChange(duplicatePortrait.transform, 4, ContaminationCause.RepeatCheck, 16f, Vector3.zero, Vector3.zero, Vector3.one, true, true),
+            CauseChange(doorA.transform, 3, ContaminationCause.TurnAround, 18f, new Vector3(0f, 0f, 1.4f), new Vector3(0f, 6f, 0f), Vector3.one, false, true),
+            CauseChange(doorB.transform, 4, ContaminationCause.RepeatCheck, 16f, new Vector3(0f, 0f, -1.6f), new Vector3(0f, -8f, 0f), Vector3.one, false, true)
         });
 
         RenderSettings.ambientLight = new Color(0.18f, 0.19f, 0.22f);
@@ -319,6 +319,15 @@ public static class ObservationPrototypeBuilder
         };
     }
 
+    private static ContaminationChange CauseChange(Transform target, int stage, ContaminationCause cause, float minimumCauseAmount, Vector3 positionOffset, Vector3 eulerOffset, Vector3 scaleMultiplier, bool changeActive, bool active)
+    {
+        ContaminationChange change = Change(target, stage, positionOffset, eulerOffset, scaleMultiplier, changeActive, active);
+        change.requireDominantCause = true;
+        change.dominantCause = cause;
+        change.minimumCauseAmount = minimumCauseAmount;
+        return change;
+    }
+
     private static void SetObject(Object target, string propertyName, Object value)
     {
         SerializedObject serialized = new(target);
@@ -350,6 +359,9 @@ public static class ObservationPrototypeBuilder
             item.FindPropertyRelative("target").objectReferenceValue = changes[i].target;
             item.FindPropertyRelative("requiredStage").intValue = changes[i].requiredStage;
             item.FindPropertyRelative("requireOutOfView").boolValue = changes[i].requireOutOfView;
+            item.FindPropertyRelative("requireDominantCause").boolValue = changes[i].requireDominantCause;
+            item.FindPropertyRelative("dominantCause").enumValueIndex = (int)changes[i].dominantCause;
+            item.FindPropertyRelative("minimumCauseAmount").floatValue = changes[i].minimumCauseAmount;
             item.FindPropertyRelative("localPositionOffset").vector3Value = changes[i].localPositionOffset;
             item.FindPropertyRelative("localEulerOffset").vector3Value = changes[i].localEulerOffset;
             item.FindPropertyRelative("localScaleMultiplier").vector3Value = changes[i].localScaleMultiplier;
