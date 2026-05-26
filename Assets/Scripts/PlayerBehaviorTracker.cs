@@ -9,8 +9,8 @@ public sealed class PlayerBehaviorTracker : MonoBehaviour
     [SerializeField] private float lookDistance = 8f;
     [SerializeField] private float turnWindow = 0.9f;
     [SerializeField] private float turnAroundDegrees = 155f;
-    [SerializeField] private float fastLookDegreesPerSecond = 170f;
-    [SerializeField] private float eventCooldown = 1.1f;
+    [SerializeField] private float fastLookDegreesPerSecond = 300f;
+    [SerializeField] private float eventCooldown = 1.6f;
     [SerializeField] private float longLookThreshold = 2.2f;
     [SerializeField] private float longLookInterval = 1.15f;
     [SerializeField] private float repeatMinimumGap = 0.35f;
@@ -72,7 +72,7 @@ public sealed class PlayerBehaviorTracker : MonoBehaviour
         }
         else if (speed >= fastLookDegreesPerSecond && Time.time - lastFastLookAt >= eventCooldown)
         {
-            contamination?.Add(4f, ContaminationCause.FastLook);
+            contamination?.Add(3f, ContaminationCause.FastLook);
             lastFastLookAt = Time.time;
         }
 
