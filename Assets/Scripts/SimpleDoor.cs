@@ -8,7 +8,7 @@ public sealed class SimpleDoor : MonoBehaviour
     [SerializeField] private Renderer doorRenderer;
     [SerializeField] private ObservationContamination contamination;
     [SerializeField] private Camera viewCamera;
-    [SerializeField] private float openAngle = 92f;
+    [SerializeField] private float openAngle = -92f;
     [SerializeField] private float openSpeed = 68f;
     [SerializeField] private float closeSpeed = 105f;
     [SerializeField] private float observationPenaltyCooldown = 1.2f;
