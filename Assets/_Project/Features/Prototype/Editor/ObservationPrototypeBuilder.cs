@@ -23,6 +23,10 @@ public static class ObservationPrototypeBuilder
         Material changedMat = CreateMaterial("Prototype_Changed", new Color(0.22f, 0.55f, 0.52f));
         Material doorMat = CreateMaterial("Prototype_Exit", new Color(0.25f, 0.75f, 0.55f));
         Material anchorMat = CreateMaterial("Prototype_Anchor", new Color(0.35f, 0.9f, 0.8f));
+        Material turnAroundMat = CreateMaterial("Prototype_TurnAroundTrace", new Color(0.18f, 0.58f, 0.95f));
+        Material fastLookMat = CreateMaterial("Prototype_FastLookTear", new Color(0.95f, 0.16f, 0.12f));
+        Material longLookMat = CreateMaterial("Prototype_LongLookEye", new Color(0.95f, 0.68f, 0.22f));
+        Material repeatMat = CreateMaterial("Prototype_RepeatEcho", new Color(0.42f, 0.88f, 0.38f));
 
         Light mainLight = CreateLight("Main Light", new Vector3(0f, 6f, 8f), Quaternion.Euler(55f, -30f, 0f), 1.8f);
         CreateLight("Hall Light A", new Vector3(0f, 2.8f, 3.5f), Quaternion.identity, 2.6f, LightType.Point, 7f);
@@ -51,6 +55,18 @@ public static class ObservationPrototypeBuilder
         GameObject cabinet = CreateObservable("Tall Cabinet", new Vector3(-2.9f, 1.1f, 18f), new Vector3(0.8f, 2.2f, 0.6f), objectMat);
         GameObject duplicatePortrait = CreateObservable("Returned Portrait", new Vector3(3.82f, 1.55f, 20f), new Vector3(0.08f, 1.15f, 1.3f), changedMat);
         duplicatePortrait.SetActive(false);
+        GameObject turnAroundTrace = CreateObservable("Turnaround Trace", new Vector3(0f, 1.42f, 2.1f), new Vector3(0.12f, 1.85f, 1.2f), turnAroundMat);
+        turnAroundTrace.SetActive(false);
+        GameObject fastLookTearA = CreateObservable("Fast Look Tear A", new Vector3(2.15f, 1.55f, 9.6f), new Vector3(0.08f, 2.35f, 0.38f), fastLookMat);
+        fastLookTearA.transform.rotation = Quaternion.Euler(0f, 0f, 11f);
+        fastLookTearA.SetActive(false);
+        GameObject fastLookTearB = CreateObservable("Fast Look Tear B", new Vector3(-2.45f, 1.55f, 14.2f), new Vector3(0.08f, 2.15f, 0.34f), fastLookMat);
+        fastLookTearB.transform.rotation = Quaternion.Euler(0f, 0f, -9f);
+        fastLookTearB.SetActive(false);
+        GameObject staringEye = CreateObservable("Staring Eye", new Vector3(0f, 2.08f, 22.8f), new Vector3(1.2f, 0.28f, 0.08f), longLookMat);
+        staringEye.SetActive(false);
+        GameObject repeatEcho = CreateObservable("Repeat Echo", new Vector3(-3.82f, 1.55f, 20.8f), new Vector3(0.08f, 1.15f, 1.3f), repeatMat);
+        repeatEcho.SetActive(false);
 
         GameObject doorA = CreateDoor("Side Room Door", new Vector3(-3.95f, 1.15f, 5.3f), Quaternion.identity, hud, wall, contamination, camera);
         GameObject doorB = CreateDoor("Back Room Door", new Vector3(3.95f, 1.15f, 18.4f), Quaternion.Euler(0f, 180f, 0f), hud, wall, contamination, camera);
@@ -82,7 +98,12 @@ public static class ObservationPrototypeBuilder
             CauseChange(cabinet.transform, 3, ContaminationCause.LongObservation, 12f, new Vector3(0f, 0f, -1.2f), Vector3.zero, new Vector3(1f, 1.28f, 1f), false, true),
             CauseChange(duplicatePortrait.transform, 4, ContaminationCause.RepeatCheck, 16f, Vector3.zero, Vector3.zero, Vector3.one, true, true),
             CauseChange(doorA.transform, 3, ContaminationCause.TurnAround, 18f, new Vector3(0f, 0f, 1.4f), new Vector3(0f, 6f, 0f), Vector3.one, false, true),
-            CauseChange(doorB.transform, 4, ContaminationCause.RepeatCheck, 16f, new Vector3(0f, 0f, -1.6f), new Vector3(0f, -8f, 0f), Vector3.one, false, true)
+            CauseChange(doorB.transform, 4, ContaminationCause.RepeatCheck, 16f, new Vector3(0f, 0f, -1.6f), new Vector3(0f, -8f, 0f), Vector3.one, false, true),
+            CauseChange(turnAroundTrace.transform, 2, ContaminationCause.TurnAround, 13f, new Vector3(0f, 0f, -0.55f), Vector3.zero, new Vector3(1.4f, 1.05f, 1.4f), true, true),
+            CauseChange(fastLookTearA.transform, 2, ContaminationCause.FastLook, 8f, new Vector3(0.45f, 0f, 0f), new Vector3(0f, 0f, -18f), new Vector3(1f, 1.18f, 1.25f), true, true),
+            CauseChange(fastLookTearB.transform, 3, ContaminationCause.FastLook, 14f, new Vector3(-0.45f, 0f, 0f), new Vector3(0f, 0f, 18f), new Vector3(1f, 1.18f, 1.25f), true, true),
+            CauseChange(staringEye.transform, 2, ContaminationCause.LongObservation, 6f, Vector3.zero, new Vector3(0f, 0f, 0f), new Vector3(1.8f, 1.25f, 1f), true, true),
+            CauseChange(repeatEcho.transform, 3, ContaminationCause.RepeatCheck, 8f, new Vector3(0f, 0.25f, -0.65f), new Vector3(0f, 0f, 180f), new Vector3(1f, 1f, 1f), true, true)
         });
 
         RenderSettings.ambientLight = new Color(0.18f, 0.19f, 0.22f);
