@@ -35,6 +35,7 @@ public sealed class ContaminationResponder : MonoBehaviour
     private Color[] baseLightColors;
     private int lastStage;
     private float lastValue;
+    private Color activePulseColor;
     private float pulseUntil = -999f;
 
     private void Awake()
@@ -66,6 +67,7 @@ public sealed class ContaminationResponder : MonoBehaviour
 
         lastStage = contamination == null ? 0 : contamination.Stage;
         lastValue = contamination == null ? 0f : contamination.Value;
+        activePulseColor = pulseColor;
     }
 
     private void OnEnable()
@@ -195,12 +197,13 @@ public sealed class ContaminationResponder : MonoBehaviour
             float pulse = Mathf.Clamp01((pulseUntil - Time.time) / pulseDuration);
             float baseIntensity = Mathf.Lerp(baseLightIntensities[i], baseLightIntensities[i] * 0.32f, t);
             lightsToDim[i].intensity = baseIntensity * Mathf.Lerp(1f, pulseIntensity, pulse);
-            lightsToDim[i].color = Color.Lerp(baseLightColors[i], pulseColor, pulse);
+            lightsToDim[i].color = Color.Lerp(baseLightColors[i], activePulseColor, pulse);
         }
     }
 
     private void OnContaminationIncreased(float value, int stage, ContaminationCause cause)
     {
+        activePulseColor = GetPulseColor(cause);
         pulseUntil = Time.time + pulseDuration;
         hud?.ShowMessage(GetCauseMessage(cause), 1);
     }
@@ -230,6 +233,18 @@ public sealed class ContaminationResponder : MonoBehaviour
             ContaminationCause.LongObservation => "너무 오래 본 것이 너를 알아챘다.",
             ContaminationCause.RepeatCheck => "같은 것을 다시 확인한 순간 위치가 어긋났다.",
             _ => "관측 오염이 증가했다."
+        };
+    }
+
+    private Color GetPulseColor(ContaminationCause cause)
+    {
+        return cause switch
+        {
+            ContaminationCause.TurnAround => new Color(0.34f, 0.78f, 1f),
+            ContaminationCause.FastLook => new Color(1f, 0.18f, 0.12f),
+            ContaminationCause.LongObservation => new Color(1f, 0.72f, 0.24f),
+            ContaminationCause.RepeatCheck => new Color(0.52f, 0.95f, 0.48f),
+            _ => pulseColor
         };
     }
 
